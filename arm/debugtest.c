@@ -89,6 +89,188 @@ static void read_dbgb(int n, dbgregs_t *array)
   }
 }
 
+static void write_dbgb(int n, dbgregs_t *array)
+{
+  switch (n-1) {
+  case 15:
+    write_sysreg(dbgbcr15_el1, array[15].dbgbcr);
+    write_sysreg(dbgbvr15_el1, array[15].dbgbvr);
+  case 14:
+    write_sysreg(dbgbcr14_el1, array[14].dbgbcr);
+    write_sysreg(dbgbvr14_el1, array[14].dbgbvr);
+  case 13:
+    write_sysreg(dbgbcr13_el1, array[13].dbgbcr);
+    write_sysreg(dbgbvr13_el1, array[13].dbgbvr);
+  case 12:
+    write_sysreg(dbgbcr12_el1, array[12].dbgbcr);
+    write_sysreg(dbgbvr12_el1, array[12].dbgbvr);
+  case 11:
+    write_sysreg(dbgbcr11_el1, array[11].dbgbcr);
+    write_sysreg(dbgbvr11_el1, array[11].dbgbvr);
+  case 10:
+    write_sysreg(dbgbcr10_el1, array[10].dbgbcr);
+    write_sysreg(dbgbvr10_el1, array[10].dbgbvr);
+  case 9:
+    write_sysreg(dbgbcr9_el1, array[9].dbgbcr);
+    write_sysreg(dbgbvr9_el1, array[9].dbgbvr);
+  case 8:
+    write_sysreg(dbgbcr8_el1, array[8].dbgbcr);
+    write_sysreg(dbgbvr8_el1, array[8].dbgbvr);
+  case 7:
+    write_sysreg(dbgbcr7_el1, array[7].dbgbcr);
+    write_sysreg(dbgbvr7_el1, array[7].dbgbvr);
+  case 6:
+    write_sysreg(dbgbcr6_el1, array[6].dbgbcr);
+    write_sysreg(dbgbvr6_el1, array[6].dbgbvr);
+  case 5:
+    write_sysreg(dbgbcr5_el1, array[5].dbgbcr);
+    write_sysreg(dbgbvr5_el1, array[5].dbgbvr);
+  case 4:
+    write_sysreg(dbgbcr4_el1, array[4].dbgbcr);
+    write_sysreg(dbgbvr4_el1, array[4].dbgbvr);
+  case 3:
+    write_sysreg(dbgbcr3_el1, array[3].dbgbcr);
+    write_sysreg(dbgbvr3_el1, array[3].dbgbvr);
+  case 2:
+    write_sysreg(dbgbcr2_el1, array[2].dbgbcr);
+    write_sysreg(dbgbvr2_el1, array[2].dbgbvr);
+  case 1:
+    write_sysreg(dbgbcr1_el1, array[1].dbgbcr);
+    write_sysreg(dbgbvr1_el1, array[1].dbgbvr);
+  case 0:
+    write_sysreg(dbgbcr0_el1, array[0].dbgbcr);
+    write_sysreg(dbgbvr0_el1, array[0].dbgbvr);
+    break;
+   default:
+     break;
+  }
+}
+
+static void read_dbgw(int n, dbgregs_t *array)
+{
+  switch (n-1) {
+  case 15:
+    array[15].dbgwcr = read_sysreg(dbgwcr15_el1);
+    array[15].dbgwvr = read_sysreg(dbgwcr15_el1);
+  case 14:
+    array[14].dbgwcr = read_sysreg(dbgwcr14_el1);
+    array[14].dbgwvr = read_sysreg(dbgwcr14_el1);
+  case 13:
+    array[13].dbgwcr = read_sysreg(dbgwcr13_el1);
+    array[13].dbgwvr = read_sysreg(dbgwcr13_el1);
+  case 12:
+    array[12].dbgwcr = read_sysreg(dbgwcr12_el1);
+    array[12].dbgwvr = read_sysreg(dbgwcr12_el1);
+  case 11:
+    array[11].dbgwcr = read_sysreg(dbgwcr11_el1);
+    array[11].dbgwvr = read_sysreg(dbgwcr11_el1);
+  case 10:
+    array[10].dbgwcr = read_sysreg(dbgwcr10_el1);
+    array[10].dbgwvr = read_sysreg(dbgwcr10_el1);
+  case 9:
+    array[9].dbgwcr = read_sysreg(dbgwcr9_el1);
+    array[9].dbgwvr = read_sysreg(dbgwcr9_el1);
+  case 8:
+    array[8].dbgwcr = read_sysreg(dbgwcr8_el1);
+    array[8].dbgwvr = read_sysreg(dbgwcr8_el1);
+  case 7:
+    array[7].dbgwcr = read_sysreg(dbgwcr7_el1);
+    array[7].dbgwvr = read_sysreg(dbgwcr7_el1);
+  case 6:
+    array[6].dbgwcr = read_sysreg(dbgwcr6_el1);
+    array[6].dbgwvr = read_sysreg(dbgwcr6_el1);
+  case 5:
+    array[5].dbgwcr = read_sysreg(dbgwcr5_el1);
+    array[5].dbgwvr = read_sysreg(dbgwcr5_el1);
+  case 4:
+    array[4].dbgwcr = read_sysreg(dbgwcr4_el1);
+    array[4].dbgwvr = read_sysreg(dbgwvr4_el1);
+  case 3:
+    array[3].dbgwcr = read_sysreg(dbgwcr3_el1);
+    array[3].dbgwvr = read_sysreg(dbgwvr3_el1);
+  case 2:
+    array[2].dbgwcr = read_sysreg(dbgwcr2_el1);
+    array[2].dbgwvr = read_sysreg(dbgwvr2_el1);
+  case 1:
+    array[1].dbgwcr = read_sysreg(dbgwcr1_el1);
+    array[1].dbgwvr = read_sysreg(dbgwvr1_el1);
+  case 0:
+    array[0].dbgwcr = read_sysreg(dbgwcr0_el1);
+    array[0].dbgwvr = read_sysreg(dbgwvr0_el1);
+    break;
+   default:
+     break;
+  }
+}
+
+static void write_dbgw(int n, dbgregs_t *array)
+{
+  switch (n-1) {
+  case 15:
+    write_sysreg(dbgwcr15_el1, array[15].dbgwcr);
+    write_sysreg(dbgwvr15_el1, array[15].dbgwvr);
+  case 14:
+    write_sysreg(dbgwcr14_el1, array[14].dbgwcr);
+    write_sysreg(dbgwvr14_el1, array[14].dbgwvr);
+  case 13:
+    write_sysreg(dbgwcr13_el1, array[13].dbgwcr);
+    write_sysreg(dbgwvr13_el1, array[13].dbgwvr);
+  case 12:
+    write_sysreg(dbgwcr12_el1, array[12].dbgwcr);
+    write_sysreg(dbgwvr12_el1, array[12].dbgwvr);
+  case 11:
+    write_sysreg(dbgwcr11_el1, array[11].dbgwcr);
+    write_sysreg(dbgwvr11_el1, array[11].dbgwvr);
+  case 10:
+    write_sysreg(dbgwcr10_el1, array[10].dbgwcr);
+    write_sysreg(dbgwvr10_el1, array[10].dbgwvr);
+  case 9:
+    write_sysreg(dbgwcr9_el1, array[9].dbgwcr);
+    write_sysreg(dbgwvr9_el1, array[9].dbgwvr);
+  case 8:
+    write_sysreg(dbgwcr8_el1, array[8].dbgwcr);
+    write_sysreg(dbgwvr8_el1, array[8].dbgwvr);
+  case 7:
+    write_sysreg(dbgwcr7_el1, array[7].dbgwcr);
+    write_sysreg(dbgwvr7_el1, array[7].dbgwvr);
+  case 6:
+    write_sysreg(dbgwcr6_el1, array[6].dbgwcr);
+    write_sysreg(dbgwvr6_el1, array[6].dbgwvr);
+  case 5:
+    write_sysreg(dbgwcr5_el1, array[5].dbgwcr);
+    write_sysreg(dbgwvr5_el1, array[5].dbgwvr);
+  case 4:
+    write_sysreg(dbgwcr4_el1, array[4].dbgwcr);
+    write_sysreg(dbgwvr4_el1, array[4].dbgwvr);
+  case 3:
+    write_sysreg(dbgwcr3_el1, array[3].dbgwcr);
+    write_sysreg(dbgwvr3_el1, array[3].dbgwvr);
+  case 2:
+    write_sysreg(dbgwcr2_el1, array[2].dbgwcr);
+    write_sysreg(dbgwvr2_el1, array[2].dbgwvr);
+  case 1:
+    write_sysreg(dbgwcr1_el1, array[1].dbgwcr);
+    write_sysreg(dbgwvr1_el1, array[1].dbgwvr);
+  case 0:
+    write_sysreg(dbgwcr0_el1, array[0].dbgwcr);
+    write_sysreg(dbgwvr0_el1, array[0].dbgwvr);
+    break;
+   default:
+     break;
+  }
+}
+
+static void dump_regs(int cpu, int nbp, int nwp, dbgregs_t *array)
+{
+  int i;
+  for (i=0; i<nbp; i++) {
+    printf("CPU%d: B%d 0x%08x:0x%016llx\n", cpu, i, array[i].dbgbcr, array[i].dbgbvr);
+  }
+  for (i=0; i<nwp; i++) {
+    printf("CPU%d: W%d 0x%08x:0x%016llx\n", cpu, i, array[i].dbgwcr, array[i].dbgwvr);
+  }
+}
+
 static void test_debug_regs(void)
 {
 	int errors = 0;
@@ -105,11 +287,25 @@ static void test_debug_regs(void)
 
 	printf("CPU%d: %d BPS, %d WPS\n", cpu, nbp, nwp);
 
+        printf("Reading Initial Values\n");
         read_dbgb(nbp, &initial[0]);
-        /* read_dbgw(cpu, nwp, &initial); */
+        read_dbgw(nwp, &initial[0]);
+        dump_regs(cpu, nbp, nwp, &initial[0]);
+
+        printf("Setting all 1s\n");
         for (i=0; i<nbp; i++) {
-          printf("CPU%d: B%d 0x%08x:0x%016llx\n", cpu, i, initial[i].dbgbcr, initial[i].dbgbvr);
+          initial[i].dbgbcr = 0xfffffffe; /* E=0 */
+          initial[i].dbgbvr = 0xffffffffffffffff;
+          initial[i].dbgwcr = 0xfffffffe; /* E=0 */
+          initial[i].dbgwvr = 0xffffffffffffffff;
         }
+        write_dbgb(nbp, &initial[0]);
+        write_dbgw(nwp, &initial[0]);
+
+        printf("Reading checking for RES0\n");
+        read_dbgb(nbp, &current[0]);
+        read_dbgw(nwp, &current[0]);
+        dump_regs(cpu, nbp, nwp, &current[0]);
         
 	report("CPU%d: Done - Errors: %d\n", errors == 0, cpu, errors);
 
