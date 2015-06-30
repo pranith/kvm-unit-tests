@@ -23,6 +23,11 @@
       asm("msr	" #reg ", %0" :: "r" (val));    \
 })
 
+#define DBGBCR_RES0_MASK ~((0xff << 24) & (0xf << 9) & (0x3 << 3))
+#define DBGBVR_RES0_MASK ~(0x3)
+#define DBGWCR_RES0_MASK ~((0x7 << 29) & (0x7 << 21))
+#define DBGWVR_RES0_MASK ~(0x3)
+
 typedef struct {
   uint32_t dbgbcr;
   uint64_t dbgbvr;
@@ -296,6 +301,8 @@ static void test_debug_regs(void)
         for (i=0; i<nbp; i++) {
           initial[i].dbgbcr = 0xfffffffe; /* E=0 */
           initial[i].dbgbvr = 0xffffffffffffffff;
+        }
+        for (i=0; i<nwp; i++) {
           initial[i].dbgwcr = 0xfffffffe; /* E=0 */
           initial[i].dbgwvr = 0xffffffffffffffff;
         }
@@ -305,7 +312,61 @@ static void test_debug_regs(void)
         printf("Reading checking for RES0\n");
         read_dbgb(nbp, &current[0]);
         read_dbgw(nwp, &current[0]);
+        for (i=0; i<nbp; i++) {
+          if ((initial[i].dbgbcr & DBGBCR_RES0_MASK) != current[i].dbgbcr) {
+            printf("ERROR DBGCR%d: 0x%08x!=0x%08x\n", i, initial[i].dbgbcr & DBGBCR_RES0_MASK, current[i].dbgbcr);
+            errors++;
+          }
+          if ((initial[i].dbgbvr & DBGBVR_RES0_MASK) != current[i].dbgbvr) {
+            printf("ERROR DBGCR%d: 0x%16lx!=0x%16lx\n", i, initial[i].dbgbvr & DBGBVR_RES0_MASK, current[i].dbgbvr);
+            errors++;
+          }
+          if ((initial[i].dbgwcr & DBGWCR_RES0_MASK) != current[i].dbgwcr) {
+            printf("ERROR DBGWCR%d: 0x%08x!=0x%08x\n", i, initial[i].dbgwcr & DBGWCR_RES0_MASK, current[i].dbgwcr);
+            errors++;
+          }
+          if ((initial[i].dbgwvr & DBGWVR_RES0_MASK) != current[i].dbgwvr) {
+            printf("ERROR DBWVR%d: 0x%16x!=0x%16lx\n", i, initial[i].dbgwvr & DBGWVR_RES0_MASK, current[i].dbgwvr);
+            errors++;
+          }
+        }
         dump_regs(cpu, nbp, nwp, &current[0]);
+
+        printf("Writing differrent values\n");
+        for (i=0; i<nbp; i++) {
+          initial[i].dbgbcr = (i << 20) | (i << 16) | (i << 5);
+          initial[i].dbgbvr = (i << 24) | (i << 16) | (i << 8);
+        }
+        for (i=0; i<nwp; i++) {
+          initial[i].dbgwcr = (i << 24) | (i << 16) | (i << 5);
+          initial[i].dbgwvr = (i << 24) | (i << 16) | (i << 8);
+        }
+        write_dbgb(nbp, &initial[0]);
+        write_dbgw(nwp, &initial[0]);
+
+        printf("Reading checking for DIFF\n");
+        read_dbgb(nbp, &current[0]);
+        read_dbgw(nwp, &current[0]);
+        for (i=0; i<nbp; i++) {
+          if ((initial[i].dbgbcr & DBGBCR_RES0_MASK) != current[i].dbgbcr) {
+            printf("ERROR DBGBCR%d: 0x%08x!=0x%08x\n", i, initial[i].dbgbcr & DBGBCR_RES0_MASK, current[i].dbgbcr);
+            errors++;
+          }
+          if ((initial[i].dbgbvr & DBGBVR_RES0_MASK) != current[i].dbgbvr) {
+            printf("ERROR DBGBVR%d: 0x%16lx!=0x%16lx\n", i, initial[i].dbgbvr & DBGBVR_RES0_MASK, current[i].dbgbvr);
+            errors++;
+          }
+          if ((initial[i].dbgwcr & DBGWCR_RES0_MASK) != current[i].dbgwcr) {
+            printf("ERROR DBGWCR%d: 0x%08x!=0x%08x\n", i, initial[i].dbgwcr & DBGWCR_RES0_MASK, current[i].dbgwcr);
+            errors++;
+          }
+          if ((initial[i].dbgwvr & DBGWVR_RES0_MASK) != current[i].dbgwvr) {
+            printf("ERROR DBWVR%d: 0x%16x!=0x%16lx\n", i, initial[i].dbgwvr & DBGWVR_RES0_MASK, current[i].dbgwvr);
+            errors++;
+          }
+        }
+        dump_regs(cpu, nbp, nwp, &current[0]);
+
         
 	report("CPU%d: Done - Errors: %d\n", errors == 0, cpu, errors);
 
