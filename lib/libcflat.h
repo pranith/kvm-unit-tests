@@ -53,7 +53,7 @@ typedef _Bool		bool;
 #  define __PRI64_PREFIX	"l"
 #  define __PRIPTR_PREFIX	"l"
 #else
-#  define __PRI32_PREFIX        "l"
+#  define __PRI32_PREFIX
 #  define __PRI64_PREFIX	"ll"
 #  define __PRIPTR_PREFIX
 #endif
