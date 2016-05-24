@@ -40,6 +40,9 @@ typedef struct test_array
 
 volatile test_array *array;
 
+volatile int victim, r1, r2, wait;
+volatile unsigned long counter, iter = 50000000;
+
 /* Test definition structure
  *
  * The first function will always run on the primary CPU, it is
@@ -228,6 +231,17 @@ static void check_store_and_load_results(char *name, int thread, unsigned long s
 	}
 }
 
+static void check_peterson_results(char *name, int thread, unsigned long start, unsigned long end)
+{
+	printf("T%d: %08lx->%08lx\n", thread, start, end);
+
+	if (thread == 1) {
+		printf("counter: %lu\n", counter);
+		report("%s: errors=%d", counter == (2*iter), name, 2*iter - counter);
+	}
+
+}
+
 /*
  * This attempts to synchronise the start of both threads to roughly
  * the same time. On real hardware there is a little latency as the
@@ -343,6 +357,109 @@ void store_and_load_barrier_2(void)
 	halt();
 }
 
+void peterson_1(void)
+{
+	unsigned long start, end;
+
+	start = sync_start();
+	for (unsigned long i = 0; i < iter; i++) {
+		r1 = 1;    	// lock
+		victim = 1;
+		while(victim == 1 && r2);
+
+		counter++; 	// CS
+		r1 = 0;		// unlock
+	}
+	end = get_cntpct_el0();
+
+	while (!cpumask_test_cpu(1, &cpu_mask))
+		cpu_relax();
+
+	check_peterson_results("peterson", 1, start, end);
+}
+
+void peterson_2(void)
+{
+	unsigned long start, end;
+
+	start = sync_start();
+	for (unsigned long i = 0; i < iter; i++) {
+		r2 = 1;		// lock
+		victim = 2;
+		while(victim == 2 && r1);
+
+		counter++;
+		r2 = 0;		// unlock
+	}
+	end = get_cntpct_el0();
+
+	check_peterson_results("peterson", 2, start, end);
+
+	cpumask_set_cpu(1, &cpu_mask);
+
+	halt();
+}
+
+bool debug = 0;
+
+void peterson_barrier_1(void)
+{
+	unsigned long start, end;
+
+	start = sync_start();
+	for (unsigned long i = 0; i < iter; i++) {
+		unsigned long wait = 0;
+		r1 = 1;    	// lock
+		victim = 1;
+		smp_mb();
+		while(victim == 1 && r2) {
+			wait++;
+			if (debug && wait > 1000)
+				printf("victim %d, r2 %d, wait %lu\n", victim, r2, wait);
+		}
+		wait = 0;
+
+		counter++; 	// CS
+		r1 = 0;		// unlock
+		smp_mb();
+	}
+	end = get_cntpct_el0();
+
+	while (!cpumask_test_cpu(1, &cpu_mask))
+		cpu_relax();
+
+	check_peterson_results("peterson", 1, start, end);
+}
+
+void peterson_barrier_2(void)
+{
+	unsigned long start, end;
+
+	start = sync_start();
+	for (unsigned long i = 0; i < iter; i++) {
+		unsigned long wait = 0;
+		r2 = 1;		// lock
+		victim = 2;
+		smp_mb();
+		while(victim == 2 && r1) {
+			wait++;
+			if (debug && wait > 1000)
+				printf("victim %d, r1 %d, wait %lu\n", victim, r1, wait);
+		}
+		wait = 0;
+
+		counter++; 	// CS
+		r2 = 0;		// unlock
+		smp_mb();
+	}
+	end = get_cntpct_el0();
+
+	check_peterson_results("peterson", 2, start, end);
+
+	cpumask_set_cpu(1, &cpu_mask);
+
+	halt();
+}
 
 /* Test array */
 static test_descr_t tests[] = {
@@ -370,6 +487,16 @@ static test_descr_t tests[] = {
 	{ "sal_barrier", true,
 	  store_and_load_barrier_1,
 	  { store_and_load_barrier_2 }
+	},
+
+	{ "peterson", false,
+	  peterson_1,
+	  { peterson_2 }
+	},
+
+	{ "peterson_barrier", true,
+	  peterson_barrier_1,
+	  { peterson_barrier_2 }
 	},
 };
 
