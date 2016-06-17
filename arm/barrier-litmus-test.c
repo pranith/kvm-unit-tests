@@ -400,26 +400,19 @@ void peterson_2(void)
 	halt();
 }
 
-bool debug = 0;
-
 void peterson_barrier_1(void)
 {
 	unsigned long start, end;
 
 	start = sync_start();
 	for (unsigned long i = 0; i < iter; i++) {
-		unsigned long wait = 0;
 		r1 = 1;    	// lock
 		victim = 1;
 		smp_mb();
-		while(victim == 1 && r2) {
-			wait++;
-			if (debug && wait > 1000)
-				printf("victim %d, r2 %d, wait %lu\n", victim, r2, wait);
-		}
-		wait = 0;
+		while(victim == 1 && r2);
 
 		counter++; 	// CS
+		smp_mb();
 		r1 = 0;		// unlock
 		smp_mb();
 	}
@@ -437,18 +430,13 @@ void peterson_barrier_2(void)
 
 	start = sync_start();
 	for (unsigned long i = 0; i < iter; i++) {
-		unsigned long wait = 0;
 		r2 = 1;		// lock
 		victim = 2;
 		smp_mb();
-		while(victim == 2 && r1) {
-			wait++;
-			if (debug && wait > 1000)
-				printf("victim %d, r1 %d, wait %lu\n", victim, r1, wait);
-		}
-		wait = 0;
+		while(victim == 2 && r1);
 
 		counter++; 	// CS
+		smp_mb();
 		r2 = 0;		// unlock
 		smp_mb();
 	}
